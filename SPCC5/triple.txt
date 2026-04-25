@@ -1,0 +1,45 @@
+def generate_triples(code):
+    triples = []
+    index_map = {}
+
+    for line in code:
+        left, expr = line.split('=')
+        left = left.strip()
+        parts = expr.strip().split()
+
+        if len(parts) == 1:
+            continue
+
+        arg1, op, arg2 = parts
+
+        if arg1 in index_map:
+            arg1 = f"({index_map[arg1]})"
+        if arg2 in index_map:
+            arg2 = f"({index_map[arg2]})"
+
+        triples.append((op, arg1, arg2))
+        index_map[left] = len(triples) - 1
+
+    return triples
+
+
+# -------- MAIN --------
+code = []
+
+print("Enter Three Address Code (type 'end' to stop):")
+while True:
+    line = input()
+    if line.lower() == "end":
+        break
+    code.append(line)
+
+print("\nThree Address Code:")
+for line in code:
+    print(line)
+
+triples = generate_triples(code)
+
+print("\nTriples:")
+print("Index\tOp\tArg1\tArg2")
+for i, (op, a, b) in enumerate(triples):
+    print(f"{i}\t{op}\t{a}\t{b}")
