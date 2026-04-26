@@ -1,0 +1,53 @@
+def generate_assembly(line):
+    line = line.replace(" ", "")   # remove spaces
+    lhs, rhs = line.split("=")
+
+    assembly = []
+
+    if "+" in rhs:
+        op1, op2 = rhs.split("+")
+        assembly.append(f"MOV AX, {op1}")
+        assembly.append(f"ADD AX, {op2}")
+        assembly.append(f"MOV {lhs}, AX")
+
+    elif "-" in rhs:
+        op1, op2 = rhs.split("-")
+        assembly.append(f"MOV AX, {op1}")
+        assembly.append(f"SUB AX, {op2}")
+        assembly.append(f"MOV {lhs}, AX")
+
+    elif "*" in rhs:
+        op1, op2 = rhs.split("*")
+        assembly.append(f"MOV AX, {op1}")
+        assembly.append(f"MUL {op2}")
+        assembly.append(f"MOV {lhs}, AX")
+
+    elif "/" in rhs:
+        op1, op2 = rhs.split("/")
+        assembly.append(f"MOV AX, {op1}")
+        assembly.append(f"DIV {op2}")
+        assembly.append(f"MOV {lhs}, AX")
+
+    else:
+        assembly.append(f"MOV {lhs}, {rhs}")
+
+    return assembly
+
+
+# -------- USER INPUT --------
+n = int(input("Enter number of TAC statements: "))
+
+print("Enter TAC statements (e.g., t = a - b):")
+
+all_assembly = []
+
+for i in range(n):
+    tac = input(f"Statement {i+1}: ")
+    result = generate_assembly(tac)
+    all_assembly.extend(result)
+
+# -------- OUTPUT --------
+print("\nGenerated Assembly Code:\n")
+
+for line in all_assembly:
+    print(line)
