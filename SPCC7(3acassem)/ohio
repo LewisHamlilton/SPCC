@@ -1,0 +1,65 @@
+import re
+
+# -------- USER INPUT --------
+n = int(input("Enter number of TAC statements: "))
+
+tac_lines = []
+print("Enter TAC statements:")
+
+for i in range(n):
+    line = input(f"Statement {i+1}: ")
+    tac_lines.append(line.replace("=", ":="))   # convert to your format
+
+# -------- PROCESS --------
+steps = []
+
+for line in tac_lines:
+    lhs, rhs = line.split(":=")
+    steps.append((lhs.strip(), rhs.strip()))
+
+# -------- OUTPUT HEADER --------
+print("\n{:<15} {:<20} {:<25} {}".format(
+    "Statements", "Code Generated", "Register descriptor", "Address descriptor"))
+print("-" * 90)
+print("{:<15} {:<20} {}".format("", "", "Register empty"))
+
+r0, r1 = "", ""
+
+# -------- MAIN LOGIC --------
+for i, (target, exp) in enumerate(steps):
+    stmt = f"{target} := {exp}"
+
+    if "-" in exp:
+        a, b = exp.split("-")
+        reg = "R0" if r0 == "" else "R1"
+
+        if reg == "R0":
+            r0 = target
+        else:
+            r1 = target
+
+        # MOV
+        print(f"{stmt:<15} {'MOV ' + a.strip() + ', ' + reg:<20} ", end="")
+        if reg == "R0":
+            print(f"R0 contains {r0:<10} {target} in R0")
+        else:
+            print(f"R1 contains {r1:<10} {target} in R1")
+
+        # SUB
+        print(f"{'':<15} {'SUB ' + b.strip() + ', ' + reg:<20} ", end="")
+        if reg == "R1":
+            print(f"R1 contains {r1}")
+        else:
+            print(f"R0 contains {r0}")
+
+    elif "+" in exp:
+        r0 = target
+
+        print(f"{stmt:<15} {'ADD R1, R0':<20} R0 contains {r0:<10} u in R1")
+
+        if i != len(steps) - 1:
+            print(f"{'':<15} {'':<20} R1 contains u       v in R0")
+        else:
+            print(f"{'':<15} {'MOV R0, ' + target:<20} R1 contains u       {target} in R0 and memory")
+
+    print()
